@@ -6,10 +6,13 @@ import org.springframework.web.bind.annotation.*;
 import org.wild.myblog.dto.ArticleDTO;
 import org.wild.myblog.model.Article;
 import org.wild.myblog.model.Category;
+import org.wild.myblog.model.Image;
 import org.wild.myblog.repository.ArticleRepository;
 import org.wild.myblog.repository.CategoryRepository;
+import org.wild.myblog.repository.ImageRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,10 +22,12 @@ public class ArticleController {
 
     private final ArticleRepository articleRepository;
     private final CategoryRepository categoryRepository;
+    private final ImageRepository imageRepository;
 
-    public ArticleController(ArticleRepository articleRepository, CategoryRepository categoryRepository) {
+    public ArticleController(ArticleRepository articleRepository, CategoryRepository categoryRepository, ImageRepository imageRepository) {
         this.articleRepository = articleRepository;
         this.categoryRepository = categoryRepository;
+        this.imageRepository = imageRepository;
     }
 
     private ArticleDTO convertToDTO(Article article) {
@@ -34,7 +39,9 @@ public class ArticleController {
         if (article.getCategory() != null) {
             articleDTO.setCategoryName(article.getCategory().getName());
         }
-
+        if (article.getImages() != null) {
+            articleDTO.setImageUrls(article.getImages().stream().map(Image::getUrl).toList());
+        }
         return articleDTO;
     }
 
@@ -70,12 +77,33 @@ public class ArticleController {
             article.setCategory(category);
         }
 
+        if (article.getImages() != null && !article.getImages().isEmpty()) {
+            List<Image> validImages = new ArrayList<>();
+            for (Image image : article.getImages()) {
+                if (image.getId() != null) {
+                    Image existingImage = imageRepository.findById(image.getId()).orElse(null);
+                    if (existingImage != null) {
+                        validImages.add(existingImage);
+                    } else {
+                        return ResponseEntity.badRequest().body(null);
+                    }
+                } else { // Si l'image n'existe pas en BDD, on la crée en BDD et on l'ajoute à la liste aussi
+                    Image savedImage = imageRepository.save(image);
+                    validImages.add(savedImage);
+                }
+            }
+            article.setImages(validImages);
+        }
+
         Article savedArticle = articleRepository.save(article);
         return ResponseEntity.status(HttpStatus.CREATED).body(convertToDTO(savedArticle));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ArticleDTO> updateArticle(@PathVariable Long id, @RequestBody Article articleDetails) {
+    public ResponseEntity<ArticleDTO> updateArticle(
+            @PathVariable Long id,
+            @RequestBody Article articleDetails
+    ) {
         Article article = articleRepository.findById(id).orElse(null);
         if (article == null) {
             return ResponseEntity.notFound().build();
@@ -91,6 +119,27 @@ public class ArticleController {
                 return ResponseEntity.badRequest().body(null);
             }
             article.setCategory(category);
+        }
+
+        if (article.getImages() != null && !article.getImages().isEmpty()) {
+            List<Image> validImages = new ArrayList<>();
+            for (Image image : article.getImages()) {
+                if (image.getId() != null) {
+                    Image existingImage = imageRepository.findById(image.getId()).orElse(null);
+                    if (existingImage != null) {
+                        validImages.add(existingImage);
+                    } else {
+                        return ResponseEntity.badRequest().build();
+                    }
+                } else {
+                    Image savedImage = imageRepository.save(image);
+                    validImages.add(savedImage);
+                }
+            }
+            article.setImages(validImages);
+        } else {
+            // Si aucune image n'est fournie, on vide la liste des images
+            article.getImages().clear();
         }
 
         Article updatedArticle = articleRepository.save(article);
