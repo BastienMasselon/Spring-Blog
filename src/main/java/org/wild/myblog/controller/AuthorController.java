@@ -83,6 +83,7 @@ public class AuthorController {
             for (ArticleAuthor oldArticleAuthor : author.getArticleAuthors()) {
                 articleAuthorRepository.delete(oldArticleAuthor);
             }
+            // équivalent sans boucle for : articleAuthorRepository.deleteAll(author.getArticleAuthors());
 
             List<ArticleAuthor> updatedArticleAuthors = new ArrayList<>();
 
@@ -105,9 +106,30 @@ public class AuthorController {
             for (ArticleAuthor articleAuthor : updatedArticleAuthors) {
                 articleAuthorRepository.save(articleAuthor);
             }
+            // équivalent sans boucle : articleAuthorRepository.saveAll(updatedArticleAuthors);
 
             author.setArticleAuthors(updatedArticleAuthors);
         }
+
+        Author updatedAuthor = authorRepository.save(author);
+        return ResponseEntity.ok(convertToDTO(updatedAuthor));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<AuthorDTO> deleteAuthor(@PathVariable Long id) {
+        Author author = authorRepository.findById(id).orElse(null);
+        if (author == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (author.getArticleAuthors() != null) {
+            for (ArticleAuthor articleAuthor : author.getArticleAuthors()) {
+                articleAuthorRepository.delete(articleAuthor);
+            }
+        }
+
+        authorRepository.delete(author);
+        return ResponseEntity.noContent().build();
     }
 
     private AuthorDTO convertToDTO(Author author) {
