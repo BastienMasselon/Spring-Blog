@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@RequestMapping("/authors")
 public class AuthorController {
 
     private final AuthorRepository authorRepository;

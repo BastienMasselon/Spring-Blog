@@ -114,7 +114,7 @@ public class ArticleController {
         if (article.getArticleAuthors() != null) {
             for (ArticleAuthor articleAuthor : article.getArticleAuthors()) {
                 Author author = articleAuthor.getAuthor();
-                author = authorRepository.findById(author.getId().orElse(null));
+                author = authorRepository.findById(author.getId()).orElse(null);
                 if (author == null) {
                     return ResponseEntity.badRequest().body(null);
                 }
@@ -173,6 +173,35 @@ public class ArticleController {
             article.getImages().clear();
         }
 
+        if (articleDetails.getArticleAuthors() != null) {
+            for (ArticleAuthor articleAuthor : article.getArticleAuthors()) {
+                articleAuthorRepository.delete(articleAuthor);
+            }
+
+            List<ArticleAuthor> updatedArticleAuthors = new ArrayList<>();
+
+            for (ArticleAuthor articleAuthor : articleDetails.getArticleAuthors()) {
+                Author author = articleAuthor.getAuthor();
+                author = authorRepository.findById(author.getId()).orElse(null);
+                if (author == null) {
+                    return ResponseEntity.badRequest().build();
+                }
+
+                ArticleAuthor newArticleAuthor = new ArticleAuthor();
+                newArticleAuthor.setAuthor(author);
+                newArticleAuthor.setArticle(article);
+                newArticleAuthor.setContribution(articleAuthor.getContribution());
+
+                updatedArticleAuthors.add(newArticleAuthor);
+            }
+
+            for (ArticleAuthor articleAuthor : updatedArticleAuthors) {
+                articleAuthorRepository.save(articleAuthor);
+            }
+
+            article.setArticleAuthors(updatedArticleAuthors);
+        }
+
         Article updatedArticle = articleRepository.save(article);
         return ResponseEntity.ok(convertToDTO(updatedArticle));
     }
@@ -182,6 +211,11 @@ public class ArticleController {
         Article article = articleRepository.findById(id).orElse(null);
         if (article == null) {
             return ResponseEntity.notFound().build();
+        }
+        if (article.getArticleAuthors() != null) {
+            for (ArticleAuthor articleAuthor : article.getArticleAuthors()) {
+                articleAuthorRepository.delete(articleAuthor);
+            }
         }
         articleRepository.delete(article);
         return ResponseEntity.noContent().build();
