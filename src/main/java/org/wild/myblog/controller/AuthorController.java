@@ -4,148 +4,58 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.wild.myblog.dto.AuthorDTO;
-import org.wild.myblog.model.Article;
-import org.wild.myblog.model.ArticleAuthor;
 import org.wild.myblog.model.Author;
-import org.wild.myblog.repository.ArticleAuthorRepository;
-import org.wild.myblog.repository.ArticleRepository;
-import org.wild.myblog.repository.AuthorRepository;
 
-import java.util.ArrayList;
+import org.wild.myblog.service.AuthorService;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/authors")
 public class AuthorController {
 
-    private final AuthorRepository authorRepository;
-    private final ArticleRepository articleRepository;
-    private final ArticleAuthorRepository articleAuthorRepository;
+    private final AuthorService authorService;
 
-    public AuthorController(AuthorRepository authorRepository, ArticleRepository articleRepository, ArticleAuthorRepository articleAuthorRepository) {
-        this.authorRepository = authorRepository;
-        this.articleRepository = articleRepository;
-        this.articleAuthorRepository = articleAuthorRepository;
+    public AuthorController(AuthorService authorService) {
+        this.authorService = authorService;
     }
 
     @GetMapping
     public ResponseEntity<List<AuthorDTO>> getAllAuthors() {
-        List<Author> authors = authorRepository.findAll();
-        if (authors.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        List<AuthorDTO> authorDTOs = authors.stream().map(this::convertToDTO).toList();
-        return ResponseEntity.ok(authorDTOs);
+        List<AuthorDTO> authors = authorService.getAllAuthors();
+        return ResponseEntity.ok(authors);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<AuthorDTO> getAuthorById(@PathVariable Long id) {
-        Author author = authorRepository.findById(id).orElse(null);
+        AuthorDTO author = authorService.getAuthorById(id);
         if (author == null) {
             return ResponseEntity.notFound().build();
         }
-        AuthorDTO authorDTO = convertToDTO(author);
-        return ResponseEntity.ok(authorDTO);
+        return ResponseEntity.ok(author);
     }
 
     @PostMapping
     public ResponseEntity<AuthorDTO> createAuthor(@RequestBody Author author) {
-        if (author.getArticleAuthors() != null) {
-            for (ArticleAuthor articleAuthor : author.getArticleAuthors()) {
-                Article article = articleAuthor.getArticle();
-                article = articleRepository.findById(article.getId()).orElse(null);
-                if (article == null) {
-                    return ResponseEntity.badRequest().body(null);
-                }
-
-                articleAuthor.setArticle(article);
-                articleAuthor.setAuthor(author);
-
-                articleAuthorRepository.save(articleAuthor);
-            }
-        }
-
-        Author savedAuthor = authorRepository.save(author);
-        return ResponseEntity.status(HttpStatus.CREATED).body(convertToDTO(savedAuthor));
+        AuthorDTO savedAuthor = authorService.createAuthor(author);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedAuthor);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<AuthorDTO> updateAuthor(@PathVariable Long id, @RequestBody Author authorDetails) {
-        Author author = authorRepository.findById(id).orElse(null);
-        if (author == null) {
+        AuthorDTO updatedAuthor = authorService.updateAuthor(id, authorDetails);
+        if (updatedAuthor == null) {
             return ResponseEntity.notFound().build();
         }
-
-        author.setFirstname(authorDetails.getFirstname());
-        author.setLastname(authorDetails.getLastname());
-
-        if (authorDetails.getArticleAuthors() != null) {
-            // Supprimer les anciens ArticleAuthor
-            for (ArticleAuthor oldArticleAuthor : author.getArticleAuthors()) {
-                articleAuthorRepository.delete(oldArticleAuthor);
-            }
-            // équivalent sans boucle for : articleAuthorRepository.deleteAll(author.getArticleAuthors());
-
-            List<ArticleAuthor> updatedArticleAuthors = new ArrayList<>();
-
-            for (ArticleAuthor articleAuthorDetails : authorDetails.getArticleAuthors()) {
-                Article article = articleAuthorDetails.getArticle();
-                article = articleRepository.findById(article.getId()).orElse(null);
-                if (article == null) {
-                    return ResponseEntity.badRequest().build();
-                }
-
-                // Créer et associer la nouvelle relation ArticleAuthor
-                ArticleAuthor newArticleAuthor = new ArticleAuthor();
-                newArticleAuthor.setArticle(article);
-                newArticleAuthor.setAuthor(author);
-                newArticleAuthor.setContribution(articleAuthorDetails.getContribution());
-
-                updatedArticleAuthors.add(newArticleAuthor);
-            }
-
-            for (ArticleAuthor articleAuthor : updatedArticleAuthors) {
-                articleAuthorRepository.save(articleAuthor);
-            }
-            // équivalent sans boucle : articleAuthorRepository.saveAll(updatedArticleAuthors);
-
-            author.setArticleAuthors(updatedArticleAuthors);
-        }
-
-        Author updatedAuthor = authorRepository.save(author);
-        return ResponseEntity.ok(convertToDTO(updatedAuthor));
+        return ResponseEntity.ok(updatedAuthor);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<AuthorDTO> deleteAuthor(@PathVariable Long id) {
-        Author author = authorRepository.findById(id).orElse(null);
-        if (author == null) {
+    public ResponseEntity<Void> deleteAuthor(@PathVariable Long id) {
+        if (authorService.deleteAuthor(id)) {
+            return ResponseEntity.noContent().build();
+        } else {
             return ResponseEntity.notFound().build();
         }
-
-        if (author.getArticleAuthors() != null) {
-            for (ArticleAuthor articleAuthor : author.getArticleAuthors()) {
-                articleAuthorRepository.delete(articleAuthor);
-            }
-        }
-
-        authorRepository.delete(author);
-        return ResponseEntity.noContent().build();
-    }
-
-    private AuthorDTO convertToDTO(Author author) {
-        AuthorDTO authorDTO = new AuthorDTO();
-        authorDTO.setId(author.getId());
-        authorDTO.setFirstname(author.getFirstname());
-        authorDTO.setLastname(author.getLastname());
-        if (author.getArticleAuthors() != null) {
-            authorDTO.setArticleIds(author.getArticleAuthors().stream()
-                    .filter(articleAuthor -> articleAuthor.getArticle() != null)
-                    .map( articleAuthor -> {
-                        return articleAuthor.getArticle().getId();
-                    })
-                    .toList());
-        }
-        return authorDTO;
     }
 }

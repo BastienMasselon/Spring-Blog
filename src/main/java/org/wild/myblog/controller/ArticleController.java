@@ -56,7 +56,7 @@ public class ArticleController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Article> deleteArticle(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteArticle(@PathVariable Long id) {
         if (articleService.deleteArticle(id)) {
             return ResponseEntity.noContent().build();
         } else {
