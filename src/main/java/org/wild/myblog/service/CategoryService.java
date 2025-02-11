@@ -2,6 +2,7 @@ package org.wild.myblog.service;
 
 import org.springframework.stereotype.Service;
 import org.wild.myblog.dto.CategoryDTO;
+import org.wild.myblog.exception.ResourceNotFoundException;
 import org.wild.myblog.mapper.CategoryMapper;
 import org.wild.myblog.model.Category;
 import org.wild.myblog.repository.CategoryRepository;
@@ -25,10 +26,8 @@ public class CategoryService {
     }
 
     public CategoryDTO getCategoryById(Long id) {
-        Category category = categoryRepository.findById(id).orElse(null);
-        if (category  == null) {
-            return null;
-        }
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("La catégorie avec l'id " + id + " n'a pas été trouvée"));
         return categoryMapper.convertToDTO(category);
     }
 
@@ -38,10 +37,8 @@ public class CategoryService {
     }
 
     public CategoryDTO updateCategory(Long id, Category categoryDetails) {
-        Category category = categoryRepository.findById(id).orElse(null);
-        if (category == null) {
-            return null;
-        }
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("La catégorie avec l'id " + id + " n'a pas été trouvée"));
 
         category.setName(categoryDetails.getName());
 
@@ -50,10 +47,8 @@ public class CategoryService {
     }
 
     public boolean deleteCategory(Long id) {
-        Category category = categoryRepository.findById(id).orElse(null);
-        if (category == null) {
-            return false;
-        }
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("La catégorie avec l'id " + id + " n'a pas été trouvée"));
         categoryRepository.delete(category);
         return true;
     }

@@ -2,6 +2,7 @@ package org.wild.myblog.service;
 
 import org.springframework.stereotype.Service;
 import org.wild.myblog.dto.AuthorDTO;
+import org.wild.myblog.exception.ResourceNotFoundException;
 import org.wild.myblog.mapper.AuthorMapper;
 import org.wild.myblog.model.Article;
 import org.wild.myblog.model.ArticleAuthor;
@@ -39,10 +40,8 @@ public class AuthorService {
     }
 
     public AuthorDTO getAuthorById(Long id) {
-        Author author = authorRepository.findById(id).orElse(null);
-        if (author == null) {
-            return null;
-        }
+        Author author = authorRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("L'auteur avec l'id " + id + " n'a pas été trouvé"));
         return authorMapper.convertToDTO(author);
     }
 
@@ -50,10 +49,9 @@ public class AuthorService {
         if (author.getArticleAuthors() != null) {
             for (ArticleAuthor articleAuthor : author.getArticleAuthors()) {
                 Article article = articleAuthor.getArticle();
-                article = articleRepository.findById(article.getId()).orElse(null);
-                if (article == null) {
-                    return null;
-                }
+                final Long articleId = article.getId();
+                article = articleRepository.findById(article.getId())
+                        .orElseThrow(() -> new ResourceNotFoundException("L'article à l'id " + articleId + " n'a pas été trouvé"));
 
                 articleAuthor.setArticle(article);
                 articleAuthor.setAuthor(author);
@@ -67,10 +65,8 @@ public class AuthorService {
     }
 
     public AuthorDTO updateAuthor(Long id, Author authorDetails) {
-        Author author = authorRepository.findById(id).orElse(null);
-        if (author == null) {
-            return null;
-        }
+        Author author = authorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("L'auteur à l'id " + id + " n'a pas été trouvé"));
 
         author.setFirstname(authorDetails.getFirstname());
         author.setLastname(authorDetails.getLastname());
@@ -86,10 +82,9 @@ public class AuthorService {
 
             for (ArticleAuthor articleAuthorDetails : authorDetails.getArticleAuthors()) {
                 Article article = articleAuthorDetails.getArticle();
-                article = articleRepository.findById(article.getId()).orElse(null);
-                if (article == null) {
-                    return null;
-                }
+                final Long articleId = article.getId();
+                article = articleRepository.findById(article.getId())
+                        .orElseThrow(() -> new ResourceNotFoundException("L'article à l'id " + articleId + "n'a pas été trouvé"));
 
                 // Créer et associer la nouvelle relation ArticleAuthor
                 ArticleAuthor newArticleAuthor = new ArticleAuthor();
@@ -113,11 +108,8 @@ public class AuthorService {
     }
 
     public boolean deleteAuthor(Long id) {
-        Author author = authorRepository.findById(id).orElse(null);
-        if (author == null) {
-            return false;
-        }
-
+        Author author = authorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("L'auteur à l'id " + id + " n'a pas été trouvé"));
         if (author.getArticleAuthors() != null) {
             articleAuthorRepository.deleteAll(author.getArticleAuthors());
         }
