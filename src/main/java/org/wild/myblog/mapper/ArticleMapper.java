@@ -1,15 +1,24 @@
 package org.wild.myblog.mapper;
 
 import org.springframework.stereotype.Component;
+import org.wild.myblog.dto.ArticleCreateDTO;
 import org.wild.myblog.dto.ArticleDTO;
 import org.wild.myblog.dto.AuthorDTO;
 import org.wild.myblog.model.Article;
+import org.wild.myblog.model.Category;
 import org.wild.myblog.model.Image;
+import org.wild.myblog.repository.CategoryRepository;
 
 import java.util.stream.Collectors;
 
 @Component
 public class ArticleMapper {
+
+    private final CategoryRepository categoryRepository;
+
+    public ArticleMapper(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
 
     public ArticleDTO convertToDTO(Article article) {
         ArticleDTO articleDTO = new ArticleDTO();
@@ -39,5 +48,12 @@ public class ArticleMapper {
         }
 
         return articleDTO;
+    }
+
+    public Article convertToEntity(ArticleCreateDTO articleDTO) {
+        Article article = new Article();
+        article.setTitle(articleDTO.getTitle());
+        article.setContent(articleDTO.getContent());
+        return article;
     }
 }

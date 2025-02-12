@@ -1,9 +1,13 @@
 package org.wild.myblog.service;
 
 import org.springframework.stereotype.Service;
+import org.wild.myblog.dto.ArticleCreateDTO;
 import org.wild.myblog.dto.ArticleDTO;
+import org.wild.myblog.dto.AuthorContributionDTO;
+import org.wild.myblog.dto.ImageDTO;
 import org.wild.myblog.exception.ResourceNotFoundException;
 import org.wild.myblog.mapper.ArticleMapper;
+import org.wild.myblog.mapper.ImageMapper;
 import org.wild.myblog.model.*;
 import org.wild.myblog.repository.*;
 
@@ -19,6 +23,7 @@ public class ArticleService {
     private final ImageRepository imageRepository;
     private final AuthorRepository authorRepository;
     private final ArticleAuthorRepository articleAuthorRepository;
+    private final ImageMapper imageMapper;
 
     public ArticleService(
             ArticleMapper articleMapper,
@@ -26,13 +31,16 @@ public class ArticleService {
             CategoryRepository categoryRepository,
             ImageRepository imageRepository,
             AuthorRepository authorRepository,
-            ArticleAuthorRepository articleAuthorRepository) {
+            ArticleAuthorRepository articleAuthorRepository,
+            ImageMapper imageMapper
+    ) {
         this.articleMapper = articleMapper;
         this.articleRepository = articleRepository;
         this.categoryRepository = categoryRepository;
         this.imageRepository = imageRepository;
         this.authorRepository = authorRepository;
         this.articleAuthorRepository = articleAuthorRepository;
+        this.imageMapper = imageMapper;
     }
 
     public List<ArticleDTO> getAllArticles() {
@@ -47,28 +55,30 @@ public class ArticleService {
         return articleMapper.convertToDTO(article);
     }
 
-    public ArticleDTO createArticle(Article article) {
+    public ArticleDTO createArticle(ArticleCreateDTO articleCreateDTO) {
+        Article article = articleMapper.convertToEntity(articleCreateDTO);
+
         article.setCreatedAt(LocalDateTime.now());
         article.setUpdatedAt(LocalDateTime.now());
 
-        if (article.getCategory() != null) {
-            Category category = categoryRepository.findById(article.getCategory().getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("La catégorie avec l'id " + article.getCategory().getId() + " n'a pas été trouvée"));
+        if (articleCreateDTO.getCategoryId() != null) {
+            Category category = categoryRepository.findById(articleCreateDTO.getCategoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException("La catégorie avec l'id " + articleCreateDTO.getCategoryId() + " n'a pas été trouvée"));
             article.setCategory(category);
         }
 
-        if (article.getImages() != null && !article.getImages().isEmpty()) {
+        if (articleCreateDTO.getImages() != null && !articleCreateDTO.getImages().isEmpty()) {
             List<Image> validImages = new ArrayList<>();
-            for (Image image : article.getImages()) {
-                if (image.getId() != null) {
-                    Image existingImage = imageRepository.findById(image.getId()).orElse(null);
+            for (ImageDTO imageDTO : articleCreateDTO.getImages()) {
+                if (imageDTO.getId() != null) {
+                    Image existingImage = imageRepository.findById(imageDTO.getId()).orElse(null);
                     if (existingImage != null) {
                         validImages.add(existingImage);
                     } else {
-                        throw new ResourceNotFoundException("L'image avec l'id " + image.getId() + " n'a pas été trouvée");
+                        throw new ResourceNotFoundException("L'image avec l'id " + imageDTO.getId() + " n'a pas été trouvée");
                     }
                 } else { // Si l'image n'existe pas en BDD, on la crée en BDD et on l'ajoute à la liste aussi
-                    Image savedImage = imageRepository.save(image);
+                    Image savedImage = imageRepository.save(imageMapper.convertToEntity(imageDTO));
                     validImages.add(savedImage);
                 }
             }
@@ -77,17 +87,16 @@ public class ArticleService {
 
         Article savedArticle = articleRepository.save(article);
 
-        if (article.getArticleAuthors() != null) {
-            for (ArticleAuthor articleAuthor : article.getArticleAuthors()) {
-                Author author = articleAuthor.getAuthor();
-                final Long authorId = author.getId();
-                author = authorRepository.findById(author.getId())
+        if (articleCreateDTO.getAuthors()!= null) {
+            for (AuthorContributionDTO authorContributionDTO : articleCreateDTO.getAuthors()) {
+                final Long authorId = authorContributionDTO.getAuthorId();
+                Author author = authorRepository.findById(authorId)
                         .orElseThrow(() -> new ResourceNotFoundException("L'auteur à l'id " + authorId + " n'a pas été trouvé"));
 
+                ArticleAuthor articleAuthor = new ArticleAuthor();
                 articleAuthor.setAuthor(author);
                 articleAuthor.setArticle(savedArticle);
-                articleAuthor.setContribution(articleAuthor.getContribution());
-
+                articleAuthor.setContribution(authorContributionDTO.getContribution());
                 articleAuthorRepository.save(articleAuthor);
             }
         }
