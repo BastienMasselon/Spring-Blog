@@ -88,6 +88,7 @@ public class ArticleService {
         Article savedArticle = articleRepository.save(article);
 
         if (articleCreateDTO.getAuthors()!= null) {
+            List<ArticleAuthor> articleAuthors = new ArrayList<>();
             for (AuthorContributionDTO authorContributionDTO : articleCreateDTO.getAuthors()) {
                 final Long authorId = authorContributionDTO.getAuthorId();
                 Author author = authorRepository.findById(authorId)
@@ -97,11 +98,13 @@ public class ArticleService {
                 articleAuthor.setAuthor(author);
                 articleAuthor.setArticle(savedArticle);
                 articleAuthor.setContribution(authorContributionDTO.getContribution());
-                articleAuthorRepository.save(articleAuthor);
+                articleAuthors.add(articleAuthor);
             }
+            articleAuthorRepository.saveAll(articleAuthors);
+            savedArticle.setArticleAuthors(articleAuthors);
         }
 
-        return articleMapper.convertToDTO(article);
+        return articleMapper.convertToDTO(savedArticle);
     }
 
     public ArticleDTO updateArticle(
