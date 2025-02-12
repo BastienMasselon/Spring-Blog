@@ -1,6 +1,8 @@
 package org.wild.myblog.service;
 
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
+import org.wild.myblog.dto.CategoryCreateDTO;
 import org.wild.myblog.dto.CategoryDTO;
 import org.wild.myblog.exception.ResourceNotFoundException;
 import org.wild.myblog.mapper.CategoryMapper;
@@ -31,7 +33,8 @@ public class CategoryService {
         return categoryMapper.convertToDTO(category);
     }
 
-    public CategoryDTO createCategory (Category category ) {
+    public CategoryDTO createCategory (CategoryCreateDTO categoryCreateDTO ) {
+        Category category = categoryMapper.convertToEntity(categoryCreateDTO);
         Category savedCategory = categoryRepository.save(category);
         return categoryMapper.convertToDTO(savedCategory);
     }

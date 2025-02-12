@@ -1,10 +1,13 @@
 package org.wild.myblog.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.wild.myblog.dto.ArticleDTO;
+import org.wild.myblog.dto.CategoryCreateDTO;
 import org.wild.myblog.dto.CategoryDTO;
+import org.wild.myblog.mapper.CategoryMapper;
 import org.wild.myblog.model.Category;
 import org.wild.myblog.repository.CategoryRepository;
 import org.wild.myblog.service.CategoryService;
@@ -17,9 +20,11 @@ import java.util.stream.Collectors;
 public class CategoryController {
 
     private final CategoryService categoryService;
+    private final CategoryMapper categoryMapper;
 
-    public CategoryController(CategoryRepository categoryRepository, CategoryService categoryService) {
+    public CategoryController(CategoryRepository categoryRepository, CategoryService categoryService, CategoryMapper categoryMapper) {
         this.categoryService = categoryService;
+        this.categoryMapper = categoryMapper;
     }
 
     @GetMapping
@@ -41,8 +46,8 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryDTO> createCategory (@RequestBody Category category ) {
-        CategoryDTO savedCategory = categoryService.createCategory(category);
+    public ResponseEntity<CategoryDTO> createCategory (@Valid @RequestBody CategoryCreateDTO categoryCreateDTO ) {
+        CategoryDTO savedCategory = categoryService.createCategory(categoryCreateDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedCategory);
     }
 

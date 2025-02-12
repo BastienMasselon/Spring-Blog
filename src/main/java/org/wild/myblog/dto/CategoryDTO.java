@@ -1,13 +1,16 @@
 package org.wild.myblog.dto;
 
-import org.wild.myblog.model.Article;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 
 import java.util.List;
 
 public class CategoryDTO {
 
     private Long id;
+
     private String name;
+
     private List<ArticleDTO> articles;
 
     public Long getId() {
