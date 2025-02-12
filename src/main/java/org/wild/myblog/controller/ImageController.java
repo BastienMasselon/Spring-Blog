@@ -1,8 +1,10 @@
 package org.wild.myblog.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.wild.myblog.dto.image.ImageCreateDTO;
 import org.wild.myblog.dto.image.ImageDTO;
 import org.wild.myblog.model.Image;
 import org.wild.myblog.service.ImageService;
@@ -38,8 +40,8 @@ public class ImageController {
     }
 
     @PostMapping
-    public ResponseEntity<ImageDTO> createImage (@RequestBody Image image ) {
-        ImageDTO savedImage = imageService.createImage(image);
+    public ResponseEntity<ImageDTO> createImage (@Valid @RequestBody ImageCreateDTO imageCreateDTO ) {
+        ImageDTO savedImage = imageService.createImage(imageCreateDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedImage);
     }
 

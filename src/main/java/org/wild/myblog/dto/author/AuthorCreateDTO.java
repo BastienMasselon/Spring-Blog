@@ -9,12 +9,10 @@ import java.util.List;
 
 public class AuthorCreateDTO {
 
-    @NotNull(message = "Le prénom ne doit pas être nul")
     @NotBlank(message = "Le prénom ne doit pas être vide")
     @Size(min = 2, max = 50, message = "Le prénom doit contenir entre 2 et 50 caractères")
     private String firstname;
 
-    @NotNull(message = "Le nom ne doit pas être nul")
     @NotBlank(message = "Le nom ne doit pas être vide")
     @Size(min = 2, max = 50, message = "Le nom doit contenir entre 2 et 50 caractères")
     private String lastname;

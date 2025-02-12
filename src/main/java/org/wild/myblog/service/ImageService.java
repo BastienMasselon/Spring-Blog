@@ -1,6 +1,7 @@
 package org.wild.myblog.service;
 
 import org.springframework.stereotype.Service;
+import org.wild.myblog.dto.image.ImageCreateDTO;
 import org.wild.myblog.dto.image.ImageDTO;
 import org.wild.myblog.exception.ResourceNotFoundException;
 import org.wild.myblog.mapper.ImageMapper;
@@ -31,7 +32,8 @@ public class ImageService {
         return imageMapper.convertToDTO(image);
     }
 
-    public ImageDTO createImage (Image image ) {
+    public ImageDTO createImage (ImageCreateDTO imageCreateDTO ) {
+        Image image = imageMapper.convertToEntity(imageCreateDTO);
         Image savedImage = imageRepository.save(image);
         return imageMapper.convertToDTO(savedImage);
     }

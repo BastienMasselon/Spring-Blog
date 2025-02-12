@@ -1,6 +1,7 @@
 package org.wild.myblog.mapper;
 
 import org.springframework.stereotype.Component;
+import org.wild.myblog.dto.image.ImageCreateDTO;
 import org.wild.myblog.dto.image.ImageDTO;
 import org.wild.myblog.model.Article;
 import org.wild.myblog.model.Image;
@@ -22,6 +23,12 @@ public class ImageMapper {
         Image image = new Image();
         image.setId(imageDTO.getId());
         image.setUrl(imageDTO.getUrl());
+        return image;
+    }
+
+    public Image convertToEntity(ImageCreateDTO imageCreateDTO) {
+        Image image = new Image();
+        image.setUrl(imageCreateDTO.getUrl());
         return image;
     }
 }
