@@ -1,11 +1,10 @@
 package org.wild.myblog.mapper;
 
 import org.springframework.stereotype.Component;
-import org.wild.myblog.dto.ArticleCreateDTO;
-import org.wild.myblog.dto.ArticleDTO;
-import org.wild.myblog.dto.AuthorDTO;
+import org.wild.myblog.dto.article.ArticleCreateDTO;
+import org.wild.myblog.dto.article.ArticleDTO;
+import org.wild.myblog.dto.author.AuthorDTO;
 import org.wild.myblog.model.Article;
-import org.wild.myblog.model.Category;
 import org.wild.myblog.model.Image;
 import org.wild.myblog.repository.CategoryRepository;
 

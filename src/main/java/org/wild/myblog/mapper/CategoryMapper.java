@@ -1,9 +1,9 @@
 package org.wild.myblog.mapper;
 
 import org.springframework.stereotype.Component;
-import org.wild.myblog.dto.ArticleDTO;
-import org.wild.myblog.dto.CategoryCreateDTO;
-import org.wild.myblog.dto.CategoryDTO;
+import org.wild.myblog.dto.article.ArticleDTO;
+import org.wild.myblog.dto.category.CategoryCreateDTO;
+import org.wild.myblog.dto.category.CategoryDTO;
 import org.wild.myblog.model.Category;
 
 import java.util.stream.Collectors;

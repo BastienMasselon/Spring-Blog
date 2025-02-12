@@ -1,4 +1,4 @@
-package org.wild.myblog.dto;
+package org.wild.myblog.dto.author;
 
 import java.util.List;
 

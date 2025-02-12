@@ -1,4 +1,6 @@
-package org.wild.myblog.dto;
+package org.wild.myblog.dto.article;
+
+import org.wild.myblog.dto.author.AuthorDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;

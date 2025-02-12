@@ -1,7 +1,7 @@
 package org.wild.myblog.mapper;
 
 import org.springframework.stereotype.Component;
-import org.wild.myblog.dto.ImageDTO;
+import org.wild.myblog.dto.image.ImageDTO;
 import org.wild.myblog.model.Article;
 import org.wild.myblog.model.Image;
 

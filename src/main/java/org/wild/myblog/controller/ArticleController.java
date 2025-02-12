@@ -4,8 +4,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.wild.myblog.dto.ArticleCreateDTO;
-import org.wild.myblog.dto.ArticleDTO;
+import org.wild.myblog.dto.article.ArticleCreateDTO;
+import org.wild.myblog.dto.article.ArticleDTO;
 import org.wild.myblog.model.*;
 import org.wild.myblog.service.ArticleService;
 

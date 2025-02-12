@@ -1,7 +1,8 @@
 package org.wild.myblog.mapper;
 
 import org.springframework.stereotype.Component;
-import org.wild.myblog.dto.AuthorDTO;
+import org.wild.myblog.dto.author.AuthorCreateDTO;
+import org.wild.myblog.dto.author.AuthorDTO;
 import org.wild.myblog.model.Author;
 
 @Component
@@ -20,5 +21,12 @@ public class AuthorMapper {
                     .toList());
         }
         return authorDTO;
+    }
+
+    public Author convertToEntity(AuthorCreateDTO authorCreateDTO) {
+        Author author = new Author();
+        author.setFirstname(authorCreateDTO.getFirstname());
+        author.setLastname(authorCreateDTO.getLastname());
+        return author;
     }
 }

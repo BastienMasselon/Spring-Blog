@@ -1,9 +1,11 @@
 package org.wild.myblog.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.wild.myblog.dto.AuthorDTO;
+import org.wild.myblog.dto.author.AuthorCreateDTO;
+import org.wild.myblog.dto.author.AuthorDTO;
 import org.wild.myblog.model.Author;
 
 import org.wild.myblog.service.AuthorService;
@@ -36,8 +38,8 @@ public class AuthorController {
     }
 
     @PostMapping
-    public ResponseEntity<AuthorDTO> createAuthor(@RequestBody Author author) {
-        AuthorDTO savedAuthor = authorService.createAuthor(author);
+    public ResponseEntity<AuthorDTO> createAuthor(@Valid @RequestBody AuthorCreateDTO authorCreateDTO) {
+        AuthorDTO savedAuthor = authorService.createAuthor(authorCreateDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedAuthor);
     }
 

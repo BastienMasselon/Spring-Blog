@@ -3,11 +3,8 @@ package org.wild.myblog.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.wild.myblog.dto.ImageDTO;
-import org.wild.myblog.model.Article;
+import org.wild.myblog.dto.image.ImageDTO;
 import org.wild.myblog.model.Image;
-import org.wild.myblog.repository.ArticleRepository;
-import org.wild.myblog.repository.ImageRepository;
 import org.wild.myblog.service.ImageService;
 
 import java.util.List;

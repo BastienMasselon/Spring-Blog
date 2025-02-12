@@ -1,7 +1,6 @@
-package org.wild.myblog.dto;
+package org.wild.myblog.dto.category;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
+import org.wild.myblog.dto.article.ArticleDTO;
 
 import java.util.List;
 

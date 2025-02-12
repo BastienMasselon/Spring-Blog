@@ -1,10 +1,10 @@
 package org.wild.myblog.service;
 
 import org.springframework.stereotype.Service;
-import org.wild.myblog.dto.ArticleCreateDTO;
-import org.wild.myblog.dto.ArticleDTO;
-import org.wild.myblog.dto.AuthorContributionDTO;
-import org.wild.myblog.dto.ImageDTO;
+import org.wild.myblog.dto.article.ArticleCreateDTO;
+import org.wild.myblog.dto.article.ArticleDTO;
+import org.wild.myblog.dto.articleAuthor.AuthorContributionDTO;
+import org.wild.myblog.dto.image.ImageDTO;
 import org.wild.myblog.exception.ResourceNotFoundException;
 import org.wild.myblog.mapper.ArticleMapper;
 import org.wild.myblog.mapper.ImageMapper;

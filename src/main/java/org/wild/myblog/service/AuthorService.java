@@ -1,7 +1,8 @@
 package org.wild.myblog.service;
 
 import org.springframework.stereotype.Service;
-import org.wild.myblog.dto.AuthorDTO;
+import org.wild.myblog.dto.author.AuthorCreateDTO;
+import org.wild.myblog.dto.author.AuthorDTO;
 import org.wild.myblog.exception.ResourceNotFoundException;
 import org.wild.myblog.mapper.AuthorMapper;
 import org.wild.myblog.model.Article;
@@ -45,17 +46,16 @@ public class AuthorService {
         return authorMapper.convertToDTO(author);
     }
 
-    public AuthorDTO createAuthor(Author author) {
-        if (author.getArticleAuthors() != null) {
-            for (ArticleAuthor articleAuthor : author.getArticleAuthors()) {
-                Article article = articleAuthor.getArticle();
-                final Long articleId = article.getId();
-                article = articleRepository.findById(article.getId())
+    public AuthorDTO createAuthor(AuthorCreateDTO authorCreateDTO) {
+        Author author = authorMapper.convertToEntity(authorCreateDTO);
+        if (authorCreateDTO.getArticleIds() != null) {
+            for (Long articleId : authorCreateDTO.getArticleIds()) {
+                Article article = articleRepository.findById(articleId)
                         .orElseThrow(() -> new ResourceNotFoundException("L'article à l'id " + articleId + " n'a pas été trouvé"));
 
+                ArticleAuthor articleAuthor = new ArticleAuthor();
                 articleAuthor.setArticle(article);
                 articleAuthor.setAuthor(author);
-
                 articleAuthorRepository.save(articleAuthor);
             }
         }

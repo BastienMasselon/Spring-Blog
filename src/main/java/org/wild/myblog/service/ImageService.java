@@ -1,7 +1,7 @@
 package org.wild.myblog.service;
 
 import org.springframework.stereotype.Service;
-import org.wild.myblog.dto.ImageDTO;
+import org.wild.myblog.dto.image.ImageDTO;
 import org.wild.myblog.exception.ResourceNotFoundException;
 import org.wild.myblog.mapper.ImageMapper;
 import org.wild.myblog.model.Image;

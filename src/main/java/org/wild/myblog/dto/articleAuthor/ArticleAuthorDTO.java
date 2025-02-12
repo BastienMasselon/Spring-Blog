@@ -1,4 +1,7 @@
-package org.wild.myblog.dto;
+package org.wild.myblog.dto.articleAuthor;
+
+import org.wild.myblog.dto.article.ArticleDTO;
+import org.wild.myblog.dto.author.AuthorDTO;
 
 public class ArticleAuthorDTO {
 

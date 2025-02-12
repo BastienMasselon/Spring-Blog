@@ -1,10 +1,12 @@
-package org.wild.myblog.dto;
+package org.wild.myblog.dto.article;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.wild.myblog.dto.articleAuthor.AuthorContributionDTO;
+import org.wild.myblog.dto.image.ImageDTO;
 
 import java.util.List;
 

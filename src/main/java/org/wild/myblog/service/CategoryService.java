@@ -1,9 +1,8 @@
 package org.wild.myblog.service;
 
-import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
-import org.wild.myblog.dto.CategoryCreateDTO;
-import org.wild.myblog.dto.CategoryDTO;
+import org.wild.myblog.dto.category.CategoryCreateDTO;
+import org.wild.myblog.dto.category.CategoryDTO;
 import org.wild.myblog.exception.ResourceNotFoundException;
 import org.wild.myblog.mapper.CategoryMapper;
 import org.wild.myblog.model.Category;

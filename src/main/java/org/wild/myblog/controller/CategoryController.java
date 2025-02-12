@@ -4,16 +4,14 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.wild.myblog.dto.ArticleDTO;
-import org.wild.myblog.dto.CategoryCreateDTO;
-import org.wild.myblog.dto.CategoryDTO;
+import org.wild.myblog.dto.category.CategoryCreateDTO;
+import org.wild.myblog.dto.category.CategoryDTO;
 import org.wild.myblog.mapper.CategoryMapper;
 import org.wild.myblog.model.Category;
 import org.wild.myblog.repository.CategoryRepository;
 import org.wild.myblog.service.CategoryService;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/categories")
