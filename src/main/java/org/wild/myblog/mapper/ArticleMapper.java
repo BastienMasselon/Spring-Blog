@@ -40,10 +40,12 @@ public class ArticleMapper {
                     authorDTO.setId(articleAuthor.getAuthor().getId());
                     authorDTO.setFirstname(articleAuthor.getAuthor().getFirstname());
                     authorDTO.setLastname(articleAuthor.getAuthor().getLastname());
-                    authorDTO.setArticleIds(articleAuthor.getAuthor().getArticleAuthors().stream()
-                            .filter(authorsArticleAuthor -> authorsArticleAuthor.getArticle() != null )
-                            .map(authorsArticleAuthor -> authorsArticleAuthor.getArticle().getId())
-                            .toList());
+                    if (articleAuthor.getAuthor().getArticleAuthors() != null) {
+                        authorDTO.setArticleIds(articleAuthor.getAuthor().getArticleAuthors().stream()
+                                .filter(authorsArticleAuthor -> authorsArticleAuthor.getArticle() != null )
+                                .map(authorsArticleAuthor -> authorsArticleAuthor.getArticle().getId())
+                                .toList());
+                    }
                     return authorDTO;
                 })
                 .collect(Collectors.toList())
