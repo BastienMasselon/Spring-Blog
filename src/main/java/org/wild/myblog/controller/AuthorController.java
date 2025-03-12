@@ -3,6 +3,7 @@ package org.wild.myblog.controller;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.wild.myblog.dto.author.AuthorCreateDTO;
 import org.wild.myblog.dto.author.AuthorDTO;
@@ -37,12 +38,14 @@ public class AuthorController {
         return ResponseEntity.ok(author);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<AuthorDTO> createAuthor(@Valid @RequestBody AuthorCreateDTO authorCreateDTO) {
         AuthorDTO savedAuthor = authorService.createAuthor(authorCreateDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedAuthor);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('AUTHOR') and #id == authentication.principal.id)")
     @PutMapping("/{id}")
     public ResponseEntity<AuthorDTO> updateAuthor(@PathVariable Long id, @RequestBody Author authorDetails) {
         AuthorDTO updatedAuthor = authorService.updateAuthor(id, authorDetails);
@@ -52,6 +55,7 @@ public class AuthorController {
         return ResponseEntity.ok(updatedAuthor);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAuthor(@PathVariable Long id) {
         if (authorService.deleteAuthor(id)) {

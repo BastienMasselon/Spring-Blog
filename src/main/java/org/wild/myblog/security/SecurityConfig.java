@@ -2,8 +2,10 @@ package org.wild.myblog.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -13,6 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -28,6 +31,22 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/articles/**").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/articles/**").hasAnyRole("ADMIN", "AUTHOR")
+                        .requestMatchers(HttpMethod.PUT,"/articles/**").hasAnyRole("ADMIN", "AUTHOR")
+                        .requestMatchers(HttpMethod.DELETE,"/articles/**").hasAnyRole("ADMIN", "AUTHOR")
+                        .requestMatchers(HttpMethod.GET,"/categories/**").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/categories/**").hasAnyRole("ADMIN", "AUTHOR")
+                        .requestMatchers(HttpMethod.PUT,"/categories/**").hasAnyRole("ADMIN", "AUTHOR")
+                        .requestMatchers(HttpMethod.DELETE,"/categories/**").hasAnyRole("ADMIN", "AUTHOR")
+                        .requestMatchers(HttpMethod.GET,"/authors/**").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/authors/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT,"/authors/**").hasAnyRole("ADMIN", "AUTHOR")
+                        .requestMatchers(HttpMethod.DELETE,"/authors/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/images/**").hasAnyRole("ADMIN", "AUTHOR")
+                        .requestMatchers(HttpMethod.POST,"/images/**").hasAnyRole("ADMIN", "AUTHOR")
+                        .requestMatchers(HttpMethod.PUT,"/images/**").hasAnyRole("ADMIN", "AUTHOR")
+                        .requestMatchers(HttpMethod.DELETE,"/images/**").hasAnyRole("ADMIN", "AUTHOR")
                         .anyRequest().authenticated()
                 )
                 .userDetailsService(customUserDetailsService)

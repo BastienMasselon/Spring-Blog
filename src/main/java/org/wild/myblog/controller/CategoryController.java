@@ -3,6 +3,7 @@ package org.wild.myblog.controller;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.wild.myblog.dto.category.CategoryCreateDTO;
 import org.wild.myblog.dto.category.CategoryDTO;
@@ -43,12 +44,14 @@ public class CategoryController {
         return ResponseEntity.ok(category);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'AUTHOR')")
     @PostMapping
     public ResponseEntity<CategoryDTO> createCategory (@Valid @RequestBody CategoryCreateDTO categoryCreateDTO ) {
         CategoryDTO savedCategory = categoryService.createCategory(categoryCreateDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedCategory);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'AUTHOR')")
     @PutMapping("/{id}")
     public ResponseEntity<CategoryDTO> updateCategory(@PathVariable Long id, @RequestBody Category categoryDetails) {
         CategoryDTO updatedCategory = categoryService.updateCategory(id, categoryDetails);
@@ -58,6 +61,7 @@ public class CategoryController {
         return ResponseEntity.ok(updatedCategory);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'AUTHOR')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         if (categoryService.deleteCategory(id)) {
