@@ -3,10 +3,7 @@ package org.wild.myblog.controller;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.wild.myblog.dto.user.UserLoginDTO;
 import org.wild.myblog.dto.user.UserRegistrationDTO;
 import org.wild.myblog.model.User;
@@ -16,6 +13,7 @@ import org.wild.myblog.service.UserService;
 import java.util.Set;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/auth")
 public class AuthController {
     private final UserService userService;
