@@ -2,12 +2,16 @@ package org.wild.myblog.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.web.servlet.MockMvc;
 import org.wild.myblog.dto.category.CategoryDTO;
 import org.wild.myblog.exception.ResourceNotFoundException;
+import org.wild.myblog.security.CustomUserDetailsService;
+import org.wild.myblog.security.JwtService;
 import org.wild.myblog.service.CategoryService;
 
 import java.util.List;
@@ -18,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(CategoryController.class)
-@Import(ResourceNotFoundException.class)
+@AutoConfigureMockMvc(addFilters = false)
 public class CategoryControllerTest {
 
     @Autowired
@@ -26,6 +30,12 @@ public class CategoryControllerTest {
 
     @MockBean
     private CategoryService categoryService;
+
+    @MockBean
+    private JwtService jwtService;
+
+    @MockBean
+    private UserDetailsService userDetailsService;
 
     @Test
     void testGetAllCategories() throws Exception {
@@ -57,7 +67,7 @@ public class CategoryControllerTest {
 
     @Test
     void testGetCategoryById_CategoryNotFound() throws Exception {
-        when(categoryService.getCategoryById(99L)).thenThrow(new RuntimeException("Category not found"));
+        when(categoryService.getCategoryById(99L)).thenThrow(new ResourceNotFoundException("Category not found"));
 
         mockMvc.perform(get("/categories/99"))
                 .andExpect(status().isNotFound());
